@@ -1,0 +1,13 @@
+[package]
+name = "logging"
+version = "1.0.0"
+edition = "2021"
+
+[lib]
+name = "logging"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+
+[build-dependencies]
+winres = "0.1"

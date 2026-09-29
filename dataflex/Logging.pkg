@@ -1,0 +1,30 @@
+// Logging.pkg
+//
+// DataFlex bindings for logging.dll (see ../README.md).
+// LogText queues the message and returns at once; a background thread in
+// the DLL appends it to the file as soon as nobody else has the file open.
+// Call LogFlush before the application exits, or queued lines are lost.
+
+External_Function DLL_LogText "LogText" logging.dll Pointer pFilename Pointer pMessage Returns Integer
+External_Function DLL_LogStatus "LogStatus" logging.dll Returns Integer
+External_Function DLL_LogFlush "LogFlush" logging.dll Integer iTimeoutMs Returns Integer
+
+// Returns 0 when queued, -1 bad argument, -2 filename does not end in ".log"
+Function LogText Global String sFilename String sMessage Returns Integer
+    Integer iResult
+
+    Append sFilename (Character(0))
+    Append sMessage (Character(0))
+    Move (DLL_LogText(AddressOf(sFilename), AddressOf(sMessage))) to iResult
+    Function_Return iResult
+End_Function
+
+// Number of messages queued but not yet written
+Function LogStatus Global Returns Integer
+    Function_Return (DLL_LogStatus())
+End_Function
+
+// Waits up to iTimeoutMs for the queue to empty; returns messages still queued
+Function LogFlush Global Integer iTimeoutMs Returns Integer
+    Function_Return (DLL_LogFlush(iTimeoutMs))
+End_Function
